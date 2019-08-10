@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Dayly statistics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="description" content="Page created for Alfa Bank to keep viewing mood statistics of it's staff">
+    <meta name="msapplication-tap-highlight" content="no">
+	<link href="main.css" rel="stylesheet">
+    <script type="text/javascript" src="./assets/scripts/canvasjs.min.js"></script>
+    <script type="text/javascript" src="./main.js"></script>
+    <script type="text/javascript">
+    	window.onload = function () {
+    		var total=0;
+		    setInterval(getData,500)
+		    var data=[
+		                { label:'Отлично', y: 0, name: "Отлично", color: "#48FA09" },
+		                { label:'Хорошо',y: 0, name: "Хорошо", color: "#00EFFE" },
+		                { label:'Не очень',y: 0, name: "Не очень", color: "#AAB6B1" },
+		                { label:'Плохо',y: 0, name: "Плохо", color: "#FFB800" },
+		                { label:'Ужасно',y: 0, name: "Ужасно", color: "#FD3D00" }
+		            ];
+		    async function getData(){
+		    	var total=0;
+		        var fetched=[];
+		        await fetch('https://alfamooddatabase.000webhostapp.com/alfa/getTodayData.php')
+		        .then(function(response){return response.json()})
+		        .then(function(json){fetched=json;});
+		        data[0].y=parseInt(fetched.happy.count);
+		        data[1].y=parseInt(fetched.good.count);
+		        data[2].y=parseInt(fetched.meh.count);
+		        data[3].y=parseInt(fetched.sad.count);
+		        data[4].y=parseInt(fetched.angry.count);
+		        data.map((value)=>{
+		        	total+=value.y
+		        });
+		        for (var i = 0; i < 5; i++) {
+		        	document.getElementById(dataForRows[i].total).innerHTML=data[i].y;
+		        	total==0?
+		        	document.getElementById(dataForRows[i].percent).innerHTML=0
+		        	:
+		        	document.getElementById(dataForRows[i].percent).innerHTML=Math.round(data[i].y/total*1000)/10+"%"
+		        }
+		        chart.render();
+		    }
+
+		    var chart = new CanvasJS.Chart("chartContainer", {
+		        animationEnabled: true,
+		        exportEnabled: true,
+		        theme: "light2", // "light1", "light2", "dark1", "dark2"
+		        title:{
+		            text: "Распределение настроения по количеству"
+		        },
+		        axisY: {
+		            title: "Количество"
+		        },
+		        data: [{        
+		            type: "column",  
+		            dataPoints: data
+		        }]
+		    });
+
+		    chart.render();
+		    dataForRows=[
+		    {total:'happyTotal',percent:'happyPercent'},
+		    {total:'goodTotal',percent:'goodPercent'},
+		    {total:'mehTotal',percent:'mehPercent'},
+		    {total:'sadTotal',percent:'sadPercent'},
+		    {total:'angryTotal',percent:'angryPercent'}
+		    ]
+		}
+    </script>
+    <style type="text/css">
+		#fullBtn {
+		  display: block;
+		  position: fixed;
+		  bottom: 20px;
+		  right: 30px;
+		  z-index: 99;
+		  border: none;
+		  outline: none;
+		  background-color: red;
+		  color: white;
+		  cursor: pointer;
+		  padding: 15px;
+		  border-radius: 4px;
+		}
+
+		#fullBtn:hover {
+		  background-color: #555;
+		}
+    </style>
+</head>
+<body>
+	<div id='rows'>
+		<div class="app-main">
+				<div class="app-main__outer">
+	                <div class="app-main__inner">
+						<div class="row" id="row">
+					    	<div class="col-md-4 col-xl-3">
+					            <div class="card mb-3 widget-content">
+					                <div class="widget-content-outer">
+					                    <div class="widget-content-wrapper">
+					                        <div class="widget-content-left">
+					                            <div class="widget-heading" >Отлично</div>
+					                            <div class="widget-subheading" id='happyTotal'>0</div>
+					                        </div>
+					                        <div class="widget-content-right">
+					                            <div class="widget-numbers text-happy" id='happyPercent'>0%</div>
+					                        </div>
+					                    </div>
+					                </div>
+					            </div>
+					    	</div>'
+					    	<div class="col-md-4 col-xl-3">
+					            <div class="card mb-3 widget-content">
+					                <div class="widget-content-outer">
+					                    <div class="widget-content-wrapper">
+					                        <div class="widget-content-left">
+					                            <div class="widget-heading" >Хорошо</div>
+					                            <div class="widget-subheading" id='goodTotal'>0</div>
+					                        </div>
+					                        <div class="widget-content-right">
+					                            <div class="widget-numbers text-good" id='goodPercent'>0%</div>
+					                        </div>
+					                    </div>
+					                </div>
+					            </div>
+					    	</div>
+					    	<div class="col-md-4 col-xl-3">
+					            <div class="card mb-3 widget-content">
+					                <div class="widget-content-outer">
+					                    <div class="widget-content-wrapper">
+					                        <div class="widget-content-left">
+					                            <div class="widget-heading" >Не очень</div>
+					                            <div class="widget-subheading" id='mehTotal'>0</div>
+					                        </div>
+					                        <div class="widget-content-right">
+					                            <div class="widget-numbers text-meh" id='mehPercent'>0%</div>
+					                        </div>
+					                    </div>
+					                </div>
+					            </div>
+					    	</div>
+					    	<div class="col-md-4 col-xl-3">
+					            <div class="card mb-3 widget-content">
+					                <div class="widget-content-outer">
+					                    <div class="widget-content-wrapper">
+					                        <div class="widget-content-left">
+					                            <div class="widget-heading" >Плохо</div>
+					                            <div class="widget-subheading" id='sadTotal'>0</div>
+					                        </div>
+					                        <div class="widget-content-right">
+					                            <div class="widget-numbers text-sad" id='sadPercent'>0%</div>
+					                        </div>
+					                    </div>
+					                </div>
+					            </div>
+					    	</div>
+					    	<div class="col-md-4 col-xl-3">
+					            <div class="card mb-3 widget-content">
+					                <div class="widget-content-outer">
+					                    <div class="widget-content-wrapper">
+					                        <div class="widget-content-left">
+					                            <div class="widget-heading" >Ужасно</div>
+					                            <div class="widget-subheading" id='angryTotal'>0</div>
+					                        </div>
+					                        <div class="widget-content-right">
+					                            <div class="widget-numbers text-angry" id='angryPercent'>0%</div>
+					                        </div>
+					                    </div>
+					                </div>
+					            </div>
+					    	</div>
+			            </div>
+				    </div>
+			    </div>
+		    </div>'
+    </div>
+	<div id="chartContainer"></div>
+</body>
+</html>
